@@ -15,6 +15,7 @@ const Trocco=class{
 		this.drawX=30;
 		//‘Ì—Í
 		this.HP=3;
+		this.mutekiFrame=0;//•‰‚Ì’l‚¾‚Æ–³“Gó‘Ô
 	};
 };
 
@@ -104,7 +105,8 @@ const Draw=()=>{
 	context.closePath();
 	//ƒgƒƒbƒR‚Ì•`‰æ
 	context.beginPath();
-	context.fillStyle="#FF8000";
+	//context.fillStyle="#FF8000";
+	context.fillStyle="rgba(255,128,0,"+(1-((-player.mutekiFrame)%3)/2).toString(10)+")";
 	//context.fillRect(player.x-15,player.y-10,30,20);
 	context.fillRect(player.drawX-player.width/2,player.y-player.height/2,player.width,player.height);
 	context.fillStyle=fillstyle;
@@ -170,12 +172,17 @@ const ProcessGameloop=()=>{
 		const dx=player.x-enemy[i].x;
 		const dy=player.y-enemy[i].y;
 		//Õ“Ë”»’è
-		if(
-			(dx<-player.width/2 && dx+enemy[i].R>=-player.width/2 && ((dy>=-player.height/2 && dy<=player.height/2) || (dy<-player.height/2 && (dy+player.height/2)*(dy+player.height/2)+(dx+player.height/2)*(dx+player.height/2)<=enemy.R*enemy.R) || (dy<-player.height/2 && (dy-player.height/2)*(dy-player.height/2)+(dx+player.height/2)*(dx+player.height/2)<=enemy.R*enemy.R)))
-			|| (dx>=-player.width/2 && dx<=player.width/2 && dy+enemy[i].R>-player.height/2 && dy-enemy[i].R<player.height/2)
-			|| (dx>player.width/2 && dx-enemy[i].R<=player.width/2 && ((dy>=-player.height/2 && dy<=player.height/2) || (dy<-player.height/2 && (dy+player.height/2)*(dy+player.height/2)+(dx-player.height/2)*(dx-player.height/2)<=enemy.R*enemy.R) || (dy<-player.height/2 && (dy-player.height/2)*(dy-player.height/2)+(dx-player.height/2)*(dx-player.height/2)<=enemy.R*enemy.R)))
-		){
-			player.HP--;
+		if(player.mutekiFrame==0){
+			if(
+				(dx<-player.width/2 && dx+enemy[i].R>=-player.width/2 && ((dy>=-player.height/2 && dy<=player.height/2) || (dy<-player.height/2 && (dy+player.height/2)*(dy+player.height/2)+(dx+player.height/2)*(dx+player.height/2)<=enemy.R*enemy.R) || (dy<-player.height/2 && (dy-player.height/2)*(dy-player.height/2)+(dx+player.height/2)*(dx+player.height/2)<=enemy.R*enemy.R)))
+				|| (dx>=-player.width/2 && dx<=player.width/2 && dy+enemy[i].R>-player.height/2 && dy-enemy[i].R<player.height/2)
+				|| (dx>player.width/2 && dx-enemy[i].R<=player.width/2 && ((dy>=-player.height/2 && dy<=player.height/2) || (dy<-player.height/2 && (dy+player.height/2)*(dy+player.height/2)+(dx-player.height/2)*(dx-player.height/2)<=enemy.R*enemy.R) || (dy<-player.height/2 && (dy-player.height/2)*(dy-player.height/2)+(dx-player.height/2)*(dx-player.height/2)<=enemy.R*enemy.R)))
+			){
+				player.HP--;
+				player.mutekiFrame=-60;
+			}
+		}else{
+			player.mutekiFrame++;//–³“GŠÔ‚ÌÁ”ï
 		}
 		//œŠO”»’è
 		if(player.drawX+(enemy[i].x-player.x)+enemy[i].R<-10){
