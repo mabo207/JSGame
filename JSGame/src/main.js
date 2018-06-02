@@ -4,9 +4,10 @@ const Trocco=class{
 		this.x=x;
 		this.y=y;
 		//速度
-		this.vx=2;
-		this.vy=0;
 		this.maxVx=40;//最高速度
+		this.minVx=4;//最低速度
+		this.vx=this.minVx;
+		this.vy=0;
 		//角度
 		this.angle=0;//横向き。時計回りが正
 		//大きさ
@@ -16,7 +17,7 @@ const Trocco=class{
 		this.drawX=30;
 		//体力
 		this.HP=3;
-		this.mutekiFrame=0;//負の値だと無敵状態
+		this.mutekiFrame=0;//負の値だと無敵状態。
 	};
 };
 
@@ -47,6 +48,7 @@ let keyinput;
 let player;
 const groundY=400;
 let enemy=[];
+let generateEnemyAtPlayerX;
 
 const KeyPress=(e)=>{
 	switch(e.keyCode){
@@ -147,8 +149,8 @@ const ProcessGameloop=()=>{
 	if(keyinput.decelerate){
 		//Zを押していた時は減速
 		player.vx-=0.4;
-		if(player.vx<0.1){
-			player.vx=0.1;
+		if(player.vx<player.minVx){
+			player.vx=player.minVx;
 		}
 	}
 	if(keyinput.jump && player.y==groundY){
@@ -196,12 +198,13 @@ const ProcessGameloop=()=>{
 		}
 	}
 	//敵機の追加
-	if(enemy.length<100){
+	if(enemy.length<100 && player.x-generateEnemyAtPlayerX>600-player.vx*player.vx/5){
+		//敵は同時に100機まで。また、600px以上の間隔を空ける(スピードを上げると間隔は狭くなる)。
 		const rand=Math.random();
-		if(rand>0.99){
-			const maxY=390,minY=260;
+		if(rand>0.9){
+			const maxY=390,minY=130;
 			const randY=Math.random()*(maxY-minY)+minY;//出現y位置
-			if(rand<0.998){
+			if(rand<0.98){
 				//5機のうち4機はランダムな方向に進む
 				const maxArg=Math.PI,minArg=Math.PI/3;
 				const randArg=Math.random()*(maxArg-minArg)+minArg;//射出角度
@@ -212,6 +215,7 @@ const ProcessGameloop=()=>{
 				e.vy=(groundY-e.y)/(player.x-e.x)*(e.vx-player.vx);
 				enemy.push(e);
 			}
+			generateEnemyAtPlayerX=player.x;//最も最近に出現した時のプレイヤーの位置を更新
 		}
 	}
 };
@@ -221,6 +225,7 @@ const main=()=>{
 	context=canvas.getContext("2d");
 	context.font="20px 'メイリオ'";
 	keyinput=new KeyInput();
+	generateEnemyAtPlayerX=1000;//最初はしばらく敵がでてこない。
 	//トロッコを用意する
 	player=new Trocco(0,groundY);
 	//キーボード更新ハンドラを動かす
