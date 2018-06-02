@@ -9,7 +9,7 @@ const Trocco=class{
 		this.vx=this.minVx;
 		this.vy=0;
 		//角度
-		this.angle=0;//横向き。時計回りが正
+		this.angle=0;//横向き。反時計回りが正
 		//大きさ
 		this.width=30;
 		this.height=20;
@@ -107,14 +107,18 @@ const Draw=()=>{
 	context.fill();
 	context.closePath();
 	//トロッコの描画
+	context.save();
+	context.translate(player.drawX,player.y);//回転の中心点へ
+	context.rotate(player.angle);
+	context.translate(-player.drawX,-player.y);//回転は終わったので描画の基準位置を戻す
 	context.beginPath();
-	//context.fillStyle="#FF8000";
 	context.fillStyle="rgba(255,128,0,"+(1-((-player.mutekiFrame)%3)/2).toString(10)+")";
 	//context.fillRect(player.x-15,player.y-10,30,20);
 	context.fillRect(player.drawX-player.width/2,player.y-player.height/2,player.width,player.height);
 	context.fillStyle=fillstyle;
 	context.fill();
 	context.closePath();
+	context.restore();
 	//敵の描画
 	context.fillStyle="#80ffff";
 	for(let e of enemy){
@@ -165,6 +169,22 @@ const ProcessGameloop=()=>{
 		player.y=groundY;
 		player.vy=0;
 	}
+	if(player.y>=groundY){
+		//自機が地面に接しているなら機体を水平に
+		player.angle=0;
+	}else if(player.vy<0){
+		//自機が上昇中なら時計回りに回転
+		player.angle-=Math.PI/30;
+		if(player.angle<-Math.PI/4){
+			player.angle=-Math.PI/4;
+		}
+	}else if(player.vy>0){
+		//自機が上昇中なら反時計回りに回転
+		player.angle+=Math.PI/30;
+		if(player.angle>Math.PI/4){
+			player.angle=Math.PI/4;
+		}
+	}
 	//敵機の更新
 	for(let e of enemy){
 		//速度更新
@@ -178,8 +198,11 @@ const ProcessGameloop=()=>{
 	//当たり判定・敵機の除外
 	for(let i=enemy.length-1;i>=0;i--){
 		//敵機の除外を行うので、デクリメントする事で配列外参照を防ぐ
-		const dx=player.x-enemy[i].x;
-		const dy=player.y-enemy[i].y;
+		const rotatedx=player.x-enemy[i].x;
+		const rotatedy=player.y-enemy[i].y;
+		//逆回転するような回転行列をかける
+		const dx=rotatedx*Math.cos(-player.angle)-rotatedy*Math.sin(-player.angle);
+		const dy=rotatedx*Math.sin(-player.angle)+rotatedy*Math.cos(-player.angle);
 		//衝突判定
 		if(player.mutekiFrame==0){
 			if(
@@ -201,10 +224,11 @@ const ProcessGameloop=()=>{
 	if(enemy.length<100 && player.x-generateEnemyAtPlayerX>600-player.vx*player.vx/5){
 		//敵は同時に100機まで。また、600px以上の間隔を空ける(スピードを上げると間隔は狭くなる)。
 		const rand=Math.random();
-		if(rand>0.9){
+		const probability=0.1+player.vx*player.vx/3200;//敵の出現確率
+		if(rand>1.0-probability){
 			const maxY=390,minY=130;
 			const randY=Math.random()*(maxY-minY)+minY;//出現y位置
-			if(rand<0.98){
+			if(rand<1.0-probability/5){
 				//5機のうち4機はランダムな方向に進む
 				const maxArg=Math.PI,minArg=Math.PI/3;
 				const randArg=Math.random()*(maxArg-minArg)+minArg;//射出角度
