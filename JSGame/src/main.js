@@ -6,6 +6,7 @@ const Trocco=class{
 		//速度
 		this.vx=2;
 		this.vy=0;
+		this.maxVx=40;//最高速度
 		//角度
 		this.angle=0;//横向き。時計回りが正
 		//大きさ
@@ -86,7 +87,7 @@ const Draw=()=>{
 	context.fillStyle=fillstyle;
 	context.fill();
 	context.closePath();
-	const lightmergin=80;
+	const lightmergin=player.maxVx*2;
 	const circleR=5;
 	context.fillStyle="#ffff80";
 	for(let i=0;i*lightmergin-circleR<canvas.width;i++){
@@ -136,6 +137,9 @@ const ProcessGameloop=()=>{
 	if(keyinput.acceed){
 		//Cを押していた時は加速
 		player.vx+=0.1;
+		if(player.vx>=player.maxVx-1){
+			player.vx=player.maxVx-1;
+		}
 	}
 	if(keyinput.decelerate){
 		//Zを押していた時は減速
