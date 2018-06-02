@@ -4,7 +4,7 @@ const Trocco=class{
 		this.x=x;
 		this.y=y;
 		//速度
-		this.vx=0;
+		this.vx=2;
 		this.vy=0;
 		//角度
 		this.angle=0;//横向き。時計回りが正
@@ -23,6 +23,7 @@ var canvas;
 var context;
 var keyinput;
 var player;
+const groundY=400;
 
 const KeyPress=(e)=>{
 	switch(e.keyCode){
@@ -69,21 +70,26 @@ const ProcessGameloop=()=>{
 	context.closePath();
 	//更新
 	console.log(keyinput.jump);
-	if(keyinput.acceed==true){
+	if(keyinput.acceed){
 		//Cを押していた時は加速
-		player.vx++;
+		player.vx+=0.1;
 	}
-	if(keyinput.decelerate==true){
+	if(keyinput.decelerate){
 		//Zを押していた時は減速
-		player.vx--;
+		player.vx-=0.4;
 	}
-	if(keyinput.jump==true){
-		//Xを押すとジャンプ
-		player.vy+=-10;
+	if(keyinput.jump && player.y==groundY){
+		//プレイヤーが地面にいて、Xを押すとジャンプ
+		player.vy=-10;
 	}
+	player.vy+=9.8/20;//重力加速度
 	player.x+=player.vx;
 	player.y+=player.vy;
-	
+	if(player.y>groundY){
+		//地面との当たり判定
+		player.y=groundY;
+		player.vy=0;
+	}
 };
 
 const main=()=>{
@@ -91,7 +97,7 @@ const main=()=>{
 	context=canvas.getContext("2d");
 	keyinput=new KeyInput();
 	//トロッコを用意する
-	player=new Trocco(20,400);
+	player=new Trocco(20,groundY);
 	//キーボード更新ハンドラを動かす
 	//document.addEventListener("keydown",keyinput.KeyPress);//これだとthisがdocumentを指してしまうのでだめ
 	//document.addEventListener("keyup",keyinput.KeyRelease);
@@ -99,7 +105,7 @@ const main=()=>{
 	document.addEventListener("keyup",KeyRelease);
 	
 	//ゲーム部分
-	setInterval(ProcessGameloop,33);
+	setInterval(ProcessGameloop,1000/60);
 };
 
 main();
