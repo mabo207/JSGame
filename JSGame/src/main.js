@@ -134,6 +134,9 @@ const ProcessGameloop=()=>{
 	
 	//更新
 	//自機の更新
+	if(player.mutekiFrame<0){
+		player.mutekiFrame++;//無敵時間の消費
+	}
 	if(keyinput.acceed){
 		//Cを押していた時は加速
 		player.vx+=0.1;
@@ -185,8 +188,6 @@ const ProcessGameloop=()=>{
 				player.HP--;
 				player.mutekiFrame=-60;
 			}
-		}else{
-			player.mutekiFrame++;//無敵時間の消費
 		}
 		//除外判定
 		if(player.drawX+(enemy[i].x-player.x)+enemy[i].R<-10){
@@ -195,8 +196,23 @@ const ProcessGameloop=()=>{
 		}
 	}
 	//敵機の追加
-	if(enemy.length==0){
-		enemy.push(new Enemy(player.x+800,390,-3,1));
+	if(enemy.length<100){
+		const rand=Math.random();
+		if(rand>0.99){
+			const maxY=390,minY=260;
+			const randY=Math.random()*(maxY-minY)+minY;//出現y位置
+			if(rand<0.998){
+				//5機のうち4機はランダムな方向に進む
+				const maxArg=Math.PI,minArg=Math.PI/3;
+				const randArg=Math.random()*(maxArg-minArg)+minArg;//射出角度
+				enemy.push(new Enemy(player.x+800,randY,player.vx/2*Math.cos(randArg),player.vx/2*Math.sin(randArg)));
+			}else{
+				//5機のうち1機は自機のいる地面に向かって放たれる
+				let e=new Enemy(player.x+800,randY,-player.vx/2,0);
+				e.vy=(groundY-e.y)/(player.x-e.x)*(e.vx-player.vx);
+				enemy.push(e);
+			}
+		}
 	}
 };
 
