@@ -56,20 +56,44 @@ KeyRelease=(e)=>{
 const ProcessGameloop=()=>{
 	//描画
 	context.clearRect(0,0,canvas.width,canvas.height);
-	context.beginPath();
 
 	//描画処理内容
 	var fillstyle;//一時的に描画方法を保持する
-	//トロッコの描画
 	fillstyle=context.fillStyle;
-	context.fillStyle="#FF8000";
-	context.fillRect(player.x-15,player.y-10,30,20);
+	//背景の描画
+	context.beginPath();
+	context.fillStyle="#202010";
+	context.fillRect(0,0,canvas.width,canvas.height);
 	context.fillStyle=fillstyle;
-	
 	context.fill();
 	context.closePath();
+	const lightmergin=80;
+	const circleR=5;
+	context.fillStyle="#ffff80";
+	for(let i=0;i*lightmergin-circleR<canvas.width;i++){
+		context.beginPath();
+		context.arc(i*lightmergin-player.x%lightmergin,100,circleR,0,Math.PI*2);
+		context.fill();
+		context.closePath();
+	}
+	context.fillStyle=fillstyle;
+	//地面の描画
+	context.beginPath();
+	context.fillStyle="#804020";
+	context.fillRect(0,410,canvas.width,canvas.height-410);
+	context.fillStyle=fillstyle;
+	context.fill();
+	context.closePath();
+	//トロッコの描画
+	context.beginPath();
+	context.fillStyle="#FF8000";
+	//context.fillRect(player.x-15,player.y-10,30,20);
+	context.fillRect(30,player.y-10,30,20);
+	context.fillStyle=fillstyle;
+	context.fill();
+	context.closePath();
+	
 	//更新
-	console.log(keyinput.jump);
 	if(keyinput.acceed){
 		//Cを押していた時は加速
 		player.vx+=0.1;
