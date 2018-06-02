@@ -130,8 +130,13 @@ const Draw=()=>{
 	context.fillStyle=fillstyle;
 	//UI‚Ì•`‰æ
 	//Žc‚èHP
+	context.textAlign="left";
 	context.fillStyle="#ffffff";
 	context.fillText(player.HP,10,30);
+	//i‚ñ‚¾‹——£
+	context.textAlign="right";
+	context.fillStyle="#ffffff";
+	context.fillText((player.x/10).toFixed(1)+"m",canvas.width-30,30);
 };
 
 const ProcessGameloop=()=>{
