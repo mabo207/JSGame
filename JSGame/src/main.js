@@ -42,6 +42,7 @@ const KeyInput=class{
 		this.acceed=false;
 		this.decelerate=false;
 		this.jump=false;
+		this.decide=false;
 	};
 };
 
@@ -49,10 +50,7 @@ const KeyInput=class{
 let canvas;
 let context;
 let keyinput;
-let player;
-const groundY=400;
-let enemy=[];
-let generateEnemyAtPlayerX;
+let appStatus;//0:タイトル 1:ゲーム中 2:リザルト画面
 
 //関数：キー入力関連
 const KeyPress=(e)=>{
@@ -65,6 +63,9 @@ const KeyPress=(e)=>{
 		break;
 	case 67://c
 		keyinput.acceed=true;
+		break;
+	case 32://Space
+		keyinput.decide=true;
 		break;
 	}
 };
@@ -79,15 +80,34 @@ KeyRelease=(e)=>{
 	case 67://c
 		keyinput.acceed=false;
 		break;
+	case 32://Space
+		keyinput.decide=false;
+		break;
 	}
 }
 
+//ゲーム関連
+//変数：ゲーム関連
+let player;
+const groundY=400;
+let enemy=[];
+let generateEnemyAtPlayerX;
+
+//関数：初期化関連
+const InitGame=()=>{
+	enemy=[];
+	generateEnemyAtPlayerX=1000;//最初はしばらく敵がでてこない。
+	//トロッコを用意する
+	player=new Trocco(0,groundY);
+
+};
+
 //関数：描画関連
-const Draw=()=>{
+const DrawGame=()=>{
 	context.clearRect(0,0,canvas.width,canvas.height);
 
 	//描画処理内容
-	const fillstyle=context.fillStyle;;//一時的に描画方法を保持する
+	const fillstyle=context.fillStyle;//一時的に描画方法を保持する
 	//背景の描画
 	context.beginPath();
 	context.fillStyle="#202010";
@@ -258,10 +278,18 @@ const AddEnemy=()=>{
 	}
 };
 
-//ゲームループと初期化関連
+//ゲーム終了判定
+const GameClearProcess=()=>{
+	if(player.HP<=0){
+		//場面移行処理
+		appStatus=2;
+	}
+};
+
+//ゲームループ
 const ProcessGameloop=()=>{
 	//描画
-	Draw();
+	DrawGame();
 	//draw(canvas,context,player,enemy,groundY);
 	
 	//更新
@@ -273,6 +301,133 @@ const ProcessGameloop=()=>{
 	RemoveAndDamageProcess();
 	//敵機の追加
 	AddEnemy();
+	//終了判定
+	GameClearProcess();
+};
+
+//リザルト画面
+const DrawResult=()=>{
+	//context.clearRect(0,0,canvas.width,canvas.height);//DrawGame()を背景として利用するので初期化しない
+
+	//描画処理内容
+	const fillstyle=context.fillStyle;//一時的に描画方法を保持する
+	//背景の描画
+	context.beginPath();
+	context.fillStyle="rgba(0,0,0,0.5)"
+	context.fillRect(0,0,canvas.width,canvas.height);
+	context.fillStyle=fillstyle;
+	context.fill();
+	context.closePath();
+	//UIの描画
+	//進んだ距離
+	context.textAlign="center";
+	context.fillStyle="#ffffff";
+	context.fillText("You run "+(player.x/10).toFixed(1)+"m !!",canvas.width/2,canvas.height/2);
+
+};
+
+const ProcessResultloop=()=>{
+	//描画
+	DrawGame();//背景はゲーム画面をそのまま描画
+	DrawResult();
+	
+	//更新(遷移のみ)
+	if(keyinput.decide){
+		InitTitle();
+		appStatus=0;
+	}
+};
+
+//タイトル画面
+//関数：初期化
+const InitTitle=()=>{
+	//トロッコを用意する
+	player=new Trocco(0,groundY);
+	//スペースキーの入力を一度受け付けなくする
+	keyinput.decide=false;
+};
+
+//関数：描画
+const DrawTitle=()=>{
+	context.clearRect(0,0,canvas.width,canvas.height);
+
+	//描画処理内容
+	const fillstyle=context.fillStyle;//一時的に描画方法を保持する
+	//背景の描画
+	context.beginPath();
+	context.fillStyle="#202010";
+	context.fillRect(0,0,canvas.width,canvas.height);
+	context.fillStyle=fillstyle;
+	context.fill();
+	context.closePath();
+	const lightmergin=player.maxVx*2;
+	const circleR=5;
+	context.fillStyle="#ffff80";
+	for(let i=0;i*lightmergin-circleR<canvas.width;i++){
+		context.beginPath();
+		context.arc(i*lightmergin-player.x%lightmergin,100,circleR,0,Math.PI*2);
+		context.fill();
+		context.closePath();
+	}
+	context.fillStyle=fillstyle;
+	//地面の描画
+	context.beginPath();
+	context.fillStyle="#804020";
+	context.fillRect(0,groundY+player.height/2,canvas.width,canvas.height-(groundY+player.height/2));
+	context.fillStyle=fillstyle;
+	context.fill();
+	context.closePath();
+	//トロッコの描画
+	context.save();
+	context.translate(player.drawX,player.y);//回転の中心点へ
+	context.rotate(player.angle);
+	context.translate(-player.drawX,-player.y);//回転は終わったので描画の基準位置を戻す
+	context.beginPath();
+	context.fillStyle="rgb(255,128,0)";
+	context.fillRect(player.drawX-player.width/2,player.y-player.height/2,player.width,player.height);
+	context.fillStyle=fillstyle;
+	context.fill();
+	context.closePath();
+	context.restore();
+
+	//UIの描画
+	//タイトル
+	context.textAlign="center";
+	context.fillStyle="#ffffff";
+	context.fillText("Wild Train",canvas.width/2,canvas.height/4);
+
+	//説明
+	context.textAlign="center";
+	context.fillStyle="rgba(255,255,255,"+(Math.floor(player.x/player.vx/60)%2).toString(10)+")";
+	context.fillText("PRESS SPACE TO START",canvas.width/2,canvas.height*3/4);
+};
+
+const ProcessTitleloop=()=>{
+	//描画
+	DrawGame();//背景はゲーム画面をそのまま描画
+	DrawTitle();
+	
+	//更新
+	player.x+=player.vx;
+	if(keyinput.decide){
+		InitGame();
+		appStatus=1;
+	}
+};
+
+//ループ処理ルーチンと初期化
+const ProcessLoop=()=>{
+	switch(appStatus){
+		case 0:
+			ProcessTitleloop();
+			break;
+		case 1:
+			ProcessGameloop();
+			break;
+		case 2:
+			ProcessResultloop();
+			break;
+	}
 };
 
 const main=()=>{
@@ -280,9 +435,8 @@ const main=()=>{
 	context=canvas.getContext("2d");
 	context.font="20px 'メイリオ'";
 	keyinput=new KeyInput();
-	generateEnemyAtPlayerX=1000;//最初はしばらく敵がでてこない。
-	//トロッコを用意する
-	player=new Trocco(0,groundY);
+	appStatus=0;
+	InitTitle();
 	//キーボード更新ハンドラを動かす
 	//document.addEventListener("keydown",keyinput.KeyPress);//これだとthisがdocumentを指してしまうのでだめ
 	//document.addEventListener("keyup",keyinput.KeyRelease);
@@ -290,7 +444,7 @@ const main=()=>{
 	document.addEventListener("keyup",KeyRelease);
 	
 	//ゲーム部分
-	setInterval(ProcessGameloop,1000/60);
+	setInterval(ProcessLoop,1000/60);
 };
 
 main();
