@@ -1,35 +1,38 @@
+ï»¿//import draw from "./Draw.js";//ãƒ–ãƒ©ã‚¦ã‚¶ã®å¯¾å¿œçŠ¶æ³ã«ã‚ˆã‚‹ãŒã€javascriptã£ã¦ãƒ•ã‚¡ã‚¤ãƒ«åˆ†å‰²ã§ããªã„ã‚‰ã—ã„ã€ã¤ã‚‰ã½ã‚ˆ
+
+//ãƒ‡ãƒ¼ã‚¿å®šç¾©éƒ¨åˆ†
 const Trocco=class{
 	constructor(x,y){
-		//ˆÊ’u
+		//ä½ç½®
 		this.x=x;
 		this.y=y;
-		//‘¬“x
-		this.maxVx=40;//Å‚‘¬“x
-		this.minVx=4;//Å’á‘¬“x
+		//é€Ÿåº¦
+		this.maxVx=40;//æœ€é«˜é€Ÿåº¦
+		this.minVx=4;//æœ€ä½é€Ÿåº¦
 		this.vx=this.minVx;
 		this.vy=0;
-		//Šp“x
-		this.angle=0;//‰¡Œü‚«B”½Œv‰ñ‚è‚ª³
-		//‘å‚«‚³
+		//è§’åº¦
+		this.angle=0;//æ¨ªå‘ãã€‚åæ™‚è¨ˆå›ã‚ŠãŒæ­£
+		//å¤§ãã•
 		this.width=30;
 		this.height=20;
-		//•\¦xÀ•W(ƒvƒŒƒCƒ„[‚ÌxÀ•W‚ğŒÅ’è‚·‚é‚½‚ß)
+		//è¡¨ç¤ºxåº§æ¨™(ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®xåº§æ¨™ã‚’å›ºå®šã™ã‚‹ãŸã‚)
 		this.drawX=30;
-		//‘Ì—Í
+		//ä½“åŠ›
 		this.HP=3;
-		this.mutekiFrame=0;//•‰‚Ì’l‚¾‚Æ–³“Gó‘ÔB
+		this.mutekiFrame=0;//è² ã®å€¤ã ã¨ç„¡æ•µçŠ¶æ…‹ã€‚
 	};
 };
 
 const Enemy=class{
 	constructor(x,y,vx,vy){
-		//ˆÊ’u
+		//ä½ç½®
 		this.x=x;
 		this.y=y;
-		//‘¬“x
+		//é€Ÿåº¦
 		this.vx=vx;
 		this.vy=vy;
-		//‘å‚«‚³
+		//å¤§ãã•
 		this.R=10;
 	};
 };
@@ -42,6 +45,7 @@ const KeyInput=class{
 	};
 };
 
+//å¤‰æ•°ä¸€è¦§
 let canvas;
 let context;
 let keyinput;
@@ -50,6 +54,7 @@ const groundY=400;
 let enemy=[];
 let generateEnemyAtPlayerX;
 
+//é–¢æ•°ï¼šã‚­ãƒ¼å…¥åŠ›é–¢é€£
 const KeyPress=(e)=>{
 	switch(e.keyCode){
 	case 90://z
@@ -77,12 +82,13 @@ KeyRelease=(e)=>{
 	}
 }
 
+//é–¢æ•°ï¼šæç”»é–¢é€£
 const Draw=()=>{
 	context.clearRect(0,0,canvas.width,canvas.height);
 
-	//•`‰æˆ—“à—e
-	const fillstyle=context.fillStyle;;//ˆê“I‚É•`‰æ•û–@‚ğ•Û‚·‚é
-	//”wŒi‚Ì•`‰æ
+	//æç”»å‡¦ç†å†…å®¹
+	const fillstyle=context.fillStyle;;//ä¸€æ™‚çš„ã«æç”»æ–¹æ³•ã‚’ä¿æŒã™ã‚‹
+	//èƒŒæ™¯ã®æç”»
 	context.beginPath();
 	context.fillStyle="#202010";
 	context.fillRect(0,0,canvas.width,canvas.height);
@@ -99,18 +105,18 @@ const Draw=()=>{
 		context.closePath();
 	}
 	context.fillStyle=fillstyle;
-	//’n–Ê‚Ì•`‰æ
+	//åœ°é¢ã®æç”»
 	context.beginPath();
 	context.fillStyle="#804020";
 	context.fillRect(0,groundY+player.height/2,canvas.width,canvas.height-(groundY+player.height/2));
 	context.fillStyle=fillstyle;
 	context.fill();
 	context.closePath();
-	//ƒgƒƒbƒR‚Ì•`‰æ
+	//ãƒˆãƒ­ãƒƒã‚³ã®æç”»
 	context.save();
-	context.translate(player.drawX,player.y);//‰ñ“]‚Ì’†S“_‚Ö
+	context.translate(player.drawX,player.y);//å›è»¢ã®ä¸­å¿ƒç‚¹ã¸
 	context.rotate(player.angle);
-	context.translate(-player.drawX,-player.y);//‰ñ“]‚ÍI‚í‚Á‚½‚Ì‚Å•`‰æ‚ÌŠî€ˆÊ’u‚ğ–ß‚·
+	context.translate(-player.drawX,-player.y);//å›è»¢ã¯çµ‚ã‚ã£ãŸã®ã§æç”»ã®åŸºæº–ä½ç½®ã‚’æˆ»ã™
 	context.beginPath();
 	context.fillStyle="rgba(255,128,0,"+(1-((-player.mutekiFrame)%3)/2).toString(10)+")";
 	//context.fillRect(player.x-15,player.y-10,30,20);
@@ -119,7 +125,7 @@ const Draw=()=>{
 	context.fill();
 	context.closePath();
 	context.restore();
-	//“G‚Ì•`‰æ
+	//æ•µã®æç”»
 	context.fillStyle="#80ffff";
 	for(let e of enemy){
 		context.beginPath();
@@ -128,87 +134,88 @@ const Draw=()=>{
 		context.closePath();
 	}
 	context.fillStyle=fillstyle;
-	//UI‚Ì•`‰æ
-	//c‚èHP
+	//UIã®æç”»
+	//æ®‹ã‚ŠHP
 	context.textAlign="left";
 	context.fillStyle="#ffffff";
 	context.fillText(player.HP,10,30);
-	//i‚ñ‚¾‹——£
+	//é€²ã‚“ã è·é›¢
 	context.textAlign="right";
 	context.fillStyle="#ffffff";
 	context.fillText((player.x/10).toFixed(1)+"m",canvas.width-30,30);
 };
 
-const ProcessGameloop=()=>{
-	//•`‰æ
-	Draw();
-	
-	//XV
-	//©‹@‚ÌXV
+//é–¢æ•°ï¼šæ›´æ–°ï¼šè‡ªæ©Ÿé–¢é€£
+const UpdatePlayer=()=>{
 	if(player.mutekiFrame<0){
-		player.mutekiFrame++;//–³“GŠÔ‚ÌÁ”ï
+		player.mutekiFrame++;//ç„¡æ•µæ™‚é–“ã®æ¶ˆè²»
 	}
 	if(keyinput.acceed){
-		//C‚ğ‰Ÿ‚µ‚Ä‚¢‚½‚Í‰Á‘¬
+		//Cã‚’æŠ¼ã—ã¦ã„ãŸæ™‚ã¯åŠ é€Ÿ
 		player.vx+=0.1;
 		if(player.vx>=player.maxVx-1){
 			player.vx=player.maxVx-1;
 		}
 	}
 	if(keyinput.decelerate){
-		//Z‚ğ‰Ÿ‚µ‚Ä‚¢‚½‚ÍŒ¸‘¬
+		//Zã‚’æŠ¼ã—ã¦ã„ãŸæ™‚ã¯æ¸›é€Ÿ
 		player.vx-=0.4;
 		if(player.vx<player.minVx){
 			player.vx=player.minVx;
 		}
 	}
 	if(keyinput.jump && player.y==groundY){
-		//ƒvƒŒƒCƒ„[‚ª’n–Ê‚É‚¢‚ÄAX‚ğ‰Ÿ‚·‚ÆƒWƒƒƒ“ƒv
+		//ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ãŒåœ°é¢ã«ã„ã¦ã€Xã‚’æŠ¼ã™ã¨ã‚¸ãƒ£ãƒ³ãƒ—
 		player.vy=-10;
 	}
-	player.vy+=9.8/20;//d—Í‰Á‘¬“x
+	player.vy+=9.8/20;//é‡åŠ›åŠ é€Ÿåº¦
 	player.x+=player.vx;
 	player.y+=player.vy;
 	if(player.y>groundY){
-		//’n–Ê‚Æ‚Ì“–‚½‚è”»’è
+		//åœ°é¢ã¨ã®å½“ãŸã‚Šåˆ¤å®š
 		player.y=groundY;
 		player.vy=0;
 	}
 	if(player.y>=groundY){
-		//©‹@‚ª’n–Ê‚ÉÚ‚µ‚Ä‚¢‚é‚È‚ç‹@‘Ì‚ğ…•½‚É
+		//è‡ªæ©ŸãŒåœ°é¢ã«æ¥ã—ã¦ã„ã‚‹ãªã‚‰æ©Ÿä½“ã‚’æ°´å¹³ã«
 		player.angle=0;
 	}else if(player.vy<0){
-		//©‹@‚ªã¸’†‚È‚çŒv‰ñ‚è‚É‰ñ“]
+		//è‡ªæ©ŸãŒä¸Šæ˜‡ä¸­ãªã‚‰æ™‚è¨ˆå›ã‚Šã«å›è»¢
 		player.angle-=Math.PI/30;
 		if(player.angle<-Math.PI/4){
 			player.angle=-Math.PI/4;
 		}
 	}else if(player.vy>0){
-		//©‹@‚ªã¸’†‚È‚ç”½Œv‰ñ‚è‚É‰ñ“]
+		//è‡ªæ©ŸãŒä¸Šæ˜‡ä¸­ãªã‚‰åæ™‚è¨ˆå›ã‚Šã«å›è»¢
 		player.angle+=Math.PI/30;
 		if(player.angle>Math.PI/4){
 			player.angle=Math.PI/4;
 		}
 	}
-	//“G‹@‚ÌXV
-	for(let e of enemy){
-		//‘¬“xXV
+};
+
+//é–¢æ•°ï¼šæ›´æ–°ï¼šæ•µæ©Ÿãƒ»è¡çªé–¢é€£
+const UpdateEnemy=()=>{
+		for(let e of enemy){
+		//é€Ÿåº¦æ›´æ–°
 		if(e.y>groundY){
 			e.vy=-e.vy;
 		}
-		//ˆÊ’uXV
+		//ä½ç½®æ›´æ–°
 		e.x+=e.vx;
 		e.y+=e.vy;
 	}
-	//“–‚½‚è”»’èE“G‹@‚ÌœŠO
+};
+
+const RemoveAndDamageProcess=()=>{
 	for(let i=enemy.length-1;i>=0;i--){
-		//“G‹@‚ÌœŠO‚ğs‚¤‚Ì‚ÅAƒfƒNƒŠƒƒ“ƒg‚·‚é–‚Å”z—ñŠOQÆ‚ğ–h‚®
+		//æ•µæ©Ÿã®é™¤å¤–ã‚’è¡Œã†ã®ã§ã€ãƒ‡ã‚¯ãƒªãƒ¡ãƒ³ãƒˆã™ã‚‹äº‹ã§é…åˆ—å¤–å‚ç…§ã‚’é˜²ã
 		const rotatedx=player.x-enemy[i].x;
 		const rotatedy=player.y-enemy[i].y;
-		//‹t‰ñ“]‚·‚é‚æ‚¤‚È‰ñ“]s—ñ‚ğ‚©‚¯‚é
+		//é€†å›è»¢ã™ã‚‹ã‚ˆã†ãªå›è»¢è¡Œåˆ—ã‚’ã‹ã‘ã‚‹
 		const dx=rotatedx*Math.cos(-player.angle)-rotatedy*Math.sin(-player.angle);
 		const dy=rotatedx*Math.sin(-player.angle)+rotatedy*Math.cos(-player.angle);
-		//Õ“Ë”»’è
+		//è¡çªåˆ¤å®š
 		if(player.mutekiFrame==0){
 			if(
 				(dx<-player.width/2 && dx+enemy[i].R>=-player.width/2 && ((dy>=-player.height/2 && dy<=player.height/2) || (dy<-player.height/2 && (dy+player.height/2)*(dy+player.height/2)+(dx+player.height/2)*(dx+player.height/2)<=enemy.R*enemy.R) || (dy<-player.height/2 && (dy-player.height/2)*(dy-player.height/2)+(dx+player.height/2)*(dx+player.height/2)<=enemy.R*enemy.R)))
@@ -219,51 +226,70 @@ const ProcessGameloop=()=>{
 				player.mutekiFrame=-60;
 			}
 		}
-		//œŠO”»’è
+		//é™¤å¤–åˆ¤å®š
 		if(player.drawX+(enemy[i].x-player.x)+enemy[i].R<-10){
-			//‰æ–Ê‚Ì¶‚Í‚¶‚ğ’Ê‚è‰ß‚¬‚½‚çœŠO
+			//ç”»é¢ã®å·¦ã¯ã˜ã‚’é€šã‚ŠéããŸã‚‰é™¤å¤–
 			enemy.splice(i,1);
 		}
 	}
-	//“G‹@‚Ì’Ç‰Á
+};
+
+const AddEnemy=()=>{
 	if(enemy.length<100 && player.x-generateEnemyAtPlayerX>600-player.vx*player.vx/5){
-		//“G‚Í“¯‚É100‹@‚Ü‚ÅB‚Ü‚½A600pxˆÈã‚ÌŠÔŠu‚ğ‹ó‚¯‚é(ƒXƒs[ƒh‚ğã‚°‚é‚ÆŠÔŠu‚Í‹·‚­‚È‚é)B
+		//æ•µã¯åŒæ™‚ã«100æ©Ÿã¾ã§ã€‚ã¾ãŸã€600pxä»¥ä¸Šã®é–“éš”ã‚’ç©ºã‘ã‚‹(ã‚¹ãƒ”ãƒ¼ãƒ‰ã‚’ä¸Šã’ã‚‹ã¨é–“éš”ã¯ç‹­ããªã‚‹)ã€‚
 		const rand=Math.random();
-		const probability=0.1+player.vx*player.vx/3200;//“G‚ÌoŒ»Šm—¦
+		const probability=0.1+player.vx*player.vx/3200;//æ•µã®å‡ºç¾ç¢ºç‡
 		if(rand>1.0-probability){
 			const maxY=390,minY=130;
-			const randY=Math.random()*(maxY-minY)+minY;//oŒ»yˆÊ’u
+			const randY=Math.random()*(maxY-minY)+minY;//å‡ºç¾yä½ç½®
 			if(rand<1.0-probability/5){
-				//5‹@‚Ì‚¤‚¿4‹@‚Íƒ‰ƒ“ƒ_ƒ€‚È•ûŒü‚Éi‚Ş
+				//5æ©Ÿã®ã†ã¡4æ©Ÿã¯ãƒ©ãƒ³ãƒ€ãƒ ãªæ–¹å‘ã«é€²ã‚€
 				const maxArg=Math.PI,minArg=Math.PI/3;
-				const randArg=Math.random()*(maxArg-minArg)+minArg;//ËoŠp“x
+				const randArg=Math.random()*(maxArg-minArg)+minArg;//å°„å‡ºè§’åº¦
 				enemy.push(new Enemy(player.x+800,randY,player.vx/2*Math.cos(randArg),player.vx/2*Math.sin(randArg)));
 			}else{
-				//5‹@‚Ì‚¤‚¿1‹@‚Í©‹@‚Ì‚¢‚é’n–Ê‚ÉŒü‚©‚Á‚Ä•ú‚½‚ê‚é
+				//5æ©Ÿã®ã†ã¡1æ©Ÿã¯è‡ªæ©Ÿã®ã„ã‚‹åœ°é¢ã«å‘ã‹ã£ã¦æ”¾ãŸã‚Œã‚‹
 				let e=new Enemy(player.x+800,randY,-player.vx/2,0);
 				e.vy=(groundY-e.y)/(player.x-e.x)*(e.vx-player.vx);
 				enemy.push(e);
 			}
-			generateEnemyAtPlayerX=player.x;//Å‚àÅ‹ß‚ÉoŒ»‚µ‚½‚ÌƒvƒŒƒCƒ„[‚ÌˆÊ’u‚ğXV
+			generateEnemyAtPlayerX=player.x;//æœ€ã‚‚æœ€è¿‘ã«å‡ºç¾ã—ãŸæ™‚ã®ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼ã®ä½ç½®ã‚’æ›´æ–°
 		}
 	}
+};
+
+//ã‚²ãƒ¼ãƒ ãƒ«ãƒ¼ãƒ—ã¨åˆæœŸåŒ–é–¢é€£
+const ProcessGameloop=()=>{
+	//æç”»
+	Draw();
+	//draw(canvas,context,player,enemy,groundY);
+	
+	//æ›´æ–°
+	//è‡ªæ©Ÿã®æ›´æ–°
+	UpdatePlayer();
+	//æ•µæ©Ÿã®æ›´æ–°
+	UpdateEnemy();
+	//å½“ãŸã‚Šåˆ¤å®šãƒ»æ•µæ©Ÿã®é™¤å¤–
+	RemoveAndDamageProcess();
+	//æ•µæ©Ÿã®è¿½åŠ 
+	AddEnemy();
 };
 
 const main=()=>{
 	canvas=document.getElementById("canvas");
 	context=canvas.getContext("2d");
-	context.font="20px 'ƒƒCƒŠƒI'";
+	context.font="20px 'ãƒ¡ã‚¤ãƒªã‚ª'";
 	keyinput=new KeyInput();
-	generateEnemyAtPlayerX=1000;//Å‰‚Í‚µ‚Î‚ç‚­“G‚ª‚Å‚Ä‚±‚È‚¢B
-	//ƒgƒƒbƒR‚ğ—pˆÓ‚·‚é
+	generateEnemyAtPlayerX=1000;//æœ€åˆã¯ã—ã°ã‚‰ãæ•µãŒã§ã¦ã“ãªã„ã€‚
+	//ãƒˆãƒ­ãƒƒã‚³ã‚’ç”¨æ„ã™ã‚‹
 	player=new Trocco(0,groundY);
-	//ƒL[ƒ{[ƒhXVƒnƒ“ƒhƒ‰‚ğ“®‚©‚·
-	//document.addEventListener("keydown",keyinput.KeyPress);//‚±‚ê‚¾‚Æthis‚ªdocument‚ğw‚µ‚Ä‚µ‚Ü‚¤‚Ì‚Å‚¾‚ß
+	//ã‚­ãƒ¼ãƒœãƒ¼ãƒ‰æ›´æ–°ãƒãƒ³ãƒ‰ãƒ©ã‚’å‹•ã‹ã™
+	//document.addEventListener("keydown",keyinput.KeyPress);//ã“ã‚Œã ã¨thisãŒdocumentã‚’æŒ‡ã—ã¦ã—ã¾ã†ã®ã§ã ã‚
 	//document.addEventListener("keyup",keyinput.KeyRelease);
 	document.addEventListener("keydown",KeyPress);
 	document.addEventListener("keyup",KeyRelease);
 	
-	//ƒQ[ƒ€•”•ª
+	//ã‚²ãƒ¼ãƒ éƒ¨åˆ†
 	setInterval(ProcessGameloop,1000/60);
 };
 
