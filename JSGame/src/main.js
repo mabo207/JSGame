@@ -7,7 +7,7 @@ const Trocco=class{
 		this.x=x;
 		this.y=y;
 		//速度
-		this.maxVx=40;//最高速度
+		this.maxVx=39;//最高速度
 		this.minVx=4;//最低速度
 		this.vx=this.minVx;
 		this.vy=0;
@@ -163,6 +163,31 @@ const DrawGame=()=>{
 	context.textAlign="right";
 	context.fillStyle="#ffffff";
 	context.fillText((player.x/10).toFixed(1)+"m",canvas.width-30,30);
+	//スピードメーター
+	const meterX=400,meterY=440,meterDx=200,meterDy=30;
+	//メーター背景
+	context.beginPath();
+	context.fillStyle="#000000";
+	context.fillRect(meterX,meterY,meterDx,meterDy);
+	context.fillStyle=fillstyle;
+	context.fill();
+	context.closePath();
+	//メーター
+	context.beginPath();
+	if(player.vx<player.minVx*2){
+		context.fillStyle="#00FFFF";
+	}else if(player.vx<player.minVx*4){
+		context.fillStyle="#00FF00";
+	}else if(player.vx<player.minVx*7){
+		context.fillStyle="#FFFF00";
+	}else{
+		context.fillStyle="#FF0000";
+	}
+	context.fillRect(meterX,meterY,meterDx*player.vx/player.maxVx,meterDy);
+	context.fillStyle=fillstyle;
+	context.fill();
+	context.closePath();
+	
 };
 
 //関数：更新：自機関連
@@ -173,8 +198,8 @@ const UpdatePlayer=()=>{
 	if(keyinput.acceed){
 		//Cを押していた時は加速
 		player.vx+=0.1;
-		if(player.vx>=player.maxVx-1){
-			player.vx=player.maxVx-1;
+		if(player.vx>=player.maxVx){
+			player.vx=player.maxVx;
 		}
 	}
 	if(keyinput.decelerate){
